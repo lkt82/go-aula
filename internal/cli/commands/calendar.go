@@ -8,6 +8,7 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"github.com/lkt82/go-aula/internal/aulaapi"
 	"github.com/lkt82/go-aula/internal/aulaapi/models"
 	"github.com/lkt82/go-aula/internal/aulaapi/services"
 	"github.com/lkt82/go-aula/internal/cli"
@@ -230,7 +231,7 @@ func printEventList(events []models.EventSimpleDto) {
 
 		title := "(untitled)"
 		if event.Title != nil {
-			title = *event.Title
+			title = aulaapi.ExpandTitle(*event.Title)
 		}
 		eventType := ""
 		if event.EventType != nil {

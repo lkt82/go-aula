@@ -1,6 +1,10 @@
 package models
 
-import "encoding/json"
+import (
+	"encoding/json"
+
+	"github.com/lkt82/go-aula/internal/aulaapi/enums"
+)
 
 // PresenceRegistrationResult represents a presence registration result for a child.
 type PresenceRegistrationResult struct {
@@ -36,7 +40,7 @@ type ChildStatus struct {
 type ChildStatusDto struct {
 	UniStudentID int64                    `json:"uniStudentId"`
 	UniStudent   *ComeGoUniStudentProfile `json:"uniStudent,omitempty"`
-	State        *string                  `json:"state,omitempty"`
+	State        *enums.PresenceStatus    `json:"state,omitempty"`
 }
 
 // ComeGoUniStudentProfile represents a ComeGo-specific student profile.

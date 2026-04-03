@@ -124,7 +124,7 @@ func presHandleStatus(children []int64, jsonOut bool, envOverride string) {
 		for _, s := range states {
 			statusRaw := "(unknown)"
 			if s.State != nil {
-				statusRaw = *s.State
+				statusRaw = s.State.String()
 			}
 			statusDisplay := cli.ColorPresenceStatus(statusRaw)
 			name := "(unknown)"

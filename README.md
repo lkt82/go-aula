@@ -14,6 +14,7 @@ This is an **unofficial**, community-driven project. It is **not affiliated with
 ## Components
 
 - **`aula-cli`** -- Command-line interface for reading messages, calendar, posts, gallery, documents, presence, and more
+- **`aula-mcp`** -- MCP server exposing Aula data as tools for Claude and other LLM clients
 
 ## CLI commands
 
@@ -94,11 +95,70 @@ OIDC Authorization Code + PKCE flow through `login.aula.dk`.
 
 Tokens are stored at `~/.local/share/aula/tokens.json` and refreshed automatically.
 
+## MCP Server
+
+The `aula-mcp` binary is an MCP (Model Context Protocol) server that exposes Aula data as tools for Claude Desktop, Claude Code, and other MCP-compatible clients.
+
+### Available tools
+
+| Tool | Description |
+|------|-------------|
+| `list_messages` | List message threads |
+| `read_message` | Read messages in a thread |
+| `list_events` | List calendar events |
+| `show_event` | Show event details |
+| `list_posts` | List institution posts |
+| `show_post` | Show a specific post |
+| `presence_status` | Children's presence status |
+| `daily_overview` | Today's presence overview |
+| `list_notifications` | List notifications |
+| `search` | Search across all content |
+| `list_albums` | List photo albums |
+| `list_documents` | List secure documents |
+| `profile` | Show your profile |
+
+### Setup
+
+1. Build: `make build`
+2. Log in first: `./aula-cli auth login`
+3. Add to your MCP client config (see below)
+
+### Claude Code
+
+Add to `~/.claude/settings.json`:
+
+```json
+{
+  "mcpServers": {
+    "aula": {
+      "command": "/path/to/aula-mcp"
+    }
+  }
+}
+```
+
+### Claude Desktop
+
+Add to your Claude Desktop config:
+
+```json
+{
+  "mcpServers": {
+    "aula": {
+      "command": "/path/to/aula-mcp"
+    }
+  }
+}
+```
+
+Replace `/path/to/aula-mcp` with the actual path to the built binary.
+
 ## Project structure
 
 ```
 cmd/
   aula-cli/           CLI binary entry point
+  aula-mcp/           MCP server entry point
 internal/
   aulaapi/            API client library
     enums/            Enum types from Aula .NET assemblies
@@ -106,6 +166,7 @@ internal/
     services/         API service functions (one per domain)
   cli/                CLI support (config, output)
     commands/         Cobra command implementations
+  mcp/                MCP server (tool definitions + handlers)
 ```
 
 ## License

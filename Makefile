@@ -13,6 +13,7 @@ endif
 
 build:
 	go build ./cmd/aula-cli
+	go build ./cmd/aula-mcp
 
 test:
 	go test ./...
@@ -25,7 +26,7 @@ fmt:
 	goimports -w .
 
 clean:
-	rm -f aula-cli aula-cli.exe
+	rm -f aula-cli aula-cli.exe aula-mcp aula-mcp.exe
 
 run:
 	go run ./cmd/aula-cli $(ARGS)

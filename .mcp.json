@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "aula": {
+      "type": "stdio",
+      "command": "go",
+      "args": ["run", "./cmd/aula-mcp"]
+    }
+  }
+}
