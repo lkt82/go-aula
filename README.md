@@ -22,34 +22,34 @@ All commands support `--json` for machine-readable output.
 
 | Command | Description |
 |---------|-------------|
-| `aula auth login` | Browser-based OIDC login (UniLogin or MitID) |
-| `aula auth status` | Show current login state and token expiry |
-| `aula auth refresh` | Refresh an expired access token |
-| `aula auth logout` | Clear session and tokens |
-| `aula messages list` | List message threads |
-| `aula messages read <id>` | Read a specific thread |
-| `aula messages folders` | List message folders |
-| `aula calendar today` | Today's calendar events |
-| `aula calendar week` | This week's events |
-| `aula calendar show <id>` | Show a specific event |
-| `aula presence status` | Children's current presence |
-| `aula presence schedule` | This week's presence schedule |
-| `aula posts list` | List institution feed posts |
-| `aula posts show <id>` | Show a specific post |
-| `aula gallery list` | List photo albums |
-| `aula gallery show <id>` | Show media in an album |
-| `aula documents list` | List secure documents |
-| `aula documents show <id>` | Show a specific document |
-| `aula notifications list` | List recent notifications |
-| `aula search <query>` | Search profiles and groups |
-| `aula groups list` | List groups for an institution profile |
-| `aula groups show <id>` | Show group details |
-| `aula groups members <id>` | Show group members |
-| `aula profile me` | Show your profile |
-| `aula profile master-data` | Show name, email, phone |
-| `aula config policy` | Show data policy documents per institution |
-| `aula config privacy` | Show the platform privacy policy |
-| `aula config path` | Show the configuration file path |
+| `aula-cli auth login` | Browser-based OIDC login (UniLogin or MitID) |
+| `aula-cli auth status` | Show current login state and token expiry |
+| `aula-cli auth refresh` | Refresh an expired access token |
+| `aula-cli auth logout` | Clear session and tokens |
+| `aula-cli messages list` | List message threads |
+| `aula-cli messages read <id>` | Read a specific thread |
+| `aula-cli messages folders` | List message folders |
+| `aula-cli calendar today` | Today's calendar events |
+| `aula-cli calendar week` | This week's events |
+| `aula-cli calendar show <id>` | Show a specific event |
+| `aula-cli presence status` | Children's current presence |
+| `aula-cli presence schedule` | This week's presence schedule |
+| `aula-cli posts list` | List institution feed posts |
+| `aula-cli posts show <id>` | Show a specific post |
+| `aula-cli gallery list` | List photo albums |
+| `aula-cli gallery show <id>` | Show media in an album |
+| `aula-cli documents list` | List secure documents |
+| `aula-cli documents show <id>` | Show a specific document |
+| `aula-cli notifications list` | List recent notifications |
+| `aula-cli search <query>` | Search profiles and groups |
+| `aula-cli groups list` | List groups for an institution profile |
+| `aula-cli groups show <id>` | Show group details |
+| `aula-cli groups members <id>` | Show group members |
+| `aula-cli profile me` | Show your profile |
+| `aula-cli profile master-data` | Show name, email, phone |
+| `aula-cli config policy` | Show data policy documents per institution |
+| `aula-cli config privacy` | Show the platform privacy policy |
+| `aula-cli config path` | Show the configuration file path |
 
 Global flags: `--json`, `--env <environment>`, `--verbose`, `--profile <name>`.
 
@@ -73,7 +73,10 @@ make build
 
 ## Configuration
 
-`~/.config/aula/config.toml`:
+Configuration file location:
+- **Linux**: `~/.config/aula/config.toml`
+- **macOS**: `~/Library/Application Support/aula/config.toml`
+- **Windows**: `%APPDATA%\aula\config.toml`
 
 ```toml
 default_environment = "production"
@@ -88,12 +91,12 @@ All settings can be overridden with CLI flags.
 
 OIDC Authorization Code + PKCE flow through `login.aula.dk`.
 
-1. `aula auth login` opens your browser for UniLogin/MitID authentication.
+1. `aula-cli auth login` opens your browser for UniLogin/MitID authentication.
 2. Complete the login. The browser will end up on Aula's website — that's expected.
 3. Press Enter in the terminal. The browser opens again and lands on a page that won't load.
 4. Copy the URL from the browser's address bar and paste it into the terminal.
 
-Tokens are stored at `~/.local/share/aula/tokens.json` and refreshed automatically.
+Tokens are stored in the platform data directory (`%APPDATA%\aula` on Windows, `~/.local/share/aula` on Linux, `~/Library/Application Support/aula` on macOS) and refreshed automatically.
 
 ## MCP Server
 
@@ -121,21 +124,7 @@ The `aula-mcp` binary is an MCP (Model Context Protocol) server that exposes Aul
 
 1. Build: `make build`
 2. Log in first: `./aula-cli auth login`
-3. Add to your MCP client config (see below)
-
-### Claude Code
-
-Add to `~/.claude/settings.json`:
-
-```json
-{
-  "mcpServers": {
-    "aula": {
-      "command": "/path/to/aula-mcp"
-    }
-  }
-}
-```
+3. The repo includes a `.mcp.json` that configures the MCP server for Claude Code automatically using `go run`
 
 ### Claude Desktop
 
