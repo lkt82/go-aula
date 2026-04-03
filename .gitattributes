@@ -1,0 +1,25 @@
+# Normalize line endings to LF on commit, regardless of platform.
+# This ensures consistent diffs and prevents CRLF/LF churn from
+# tools like dprint, editors, and CI running on different OSes.
+* text=auto eol=lf
+
+# Explicitly mark binary files to prevent Git from mangling them.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
+*.zip binary
+*.tar.gz binary
+*.tgz binary
+
+# Shell scripts must always be LF (even on Windows).
+*.sh text eol=lf
+
+# Windows batch files need CRLF.
+*.bat text eol=crlf
+*.cmd text eol=crlf
