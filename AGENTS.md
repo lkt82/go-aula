@@ -2,7 +2,7 @@
 
 ## Project
 
-go-aula is a Go client for Denmark's Aula school communication platform. Ported from the Rust [aulalibre](https://github.com/eisbaw/aulalibre) project. The original Rust source is at `C:\src\aulalibre` for cross-referencing.
+go-aula is a Go client for Denmark's Aula school communication platform. Ported from the Rust [aulalibre](https://github.com/eisbaw/aulalibre) project. The original Rust source is at `../aulalibre` for cross-referencing.
 
 ## Structure
 
