@@ -61,17 +61,24 @@ func (p *OnboardingProfileDto) InstitutionProfileIDs() []int64 {
 	return ids
 }
 
+// MainGroup is a minimal group reference (id + name).
+type MainGroup struct {
+	ID   *int64  `json:"id,omitempty"`
+	Name *string `json:"name,omitempty"`
+}
+
 // LoginInstitutionProfile is a minimal institution profile from onboarding.
 type LoginInstitutionProfile struct {
-	ID              *int64  `json:"id,omitempty"`
-	ProfileID       *int64  `json:"profileId,omitempty"`
-	InstitutionCode *string `json:"institutionCode,omitempty"`
-	InstitutionName *string `json:"institutionName,omitempty"`
-	FirstName       *string `json:"firstName,omitempty"`
-	LastName        *string `json:"lastName,omitempty"`
-	FullName        *string `json:"fullName,omitempty"`
-	ShortName       *string `json:"shortName,omitempty"`
-	Role            *string `json:"role,omitempty"`
+	ID              *int64     `json:"id,omitempty"`
+	ProfileID       *int64     `json:"profileId,omitempty"`
+	InstitutionCode *string    `json:"institutionCode,omitempty"`
+	InstitutionName *string    `json:"institutionName,omitempty"`
+	FirstName       *string    `json:"firstName,omitempty"`
+	LastName        *string    `json:"lastName,omitempty"`
+	FullName        *string    `json:"fullName,omitempty"`
+	ShortName       *string    `json:"shortName,omitempty"`
+	Role            *string    `json:"role,omitempty"`
+	MainGroup       *MainGroup `json:"mainGroup,omitempty"`
 }
 
 // LoginChild represents a child from the onboarding response.

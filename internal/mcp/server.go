@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/lkt82/go-aula/internal/aulaapi"
-	"github.com/mark3labs/mcp-go/mcp"
 	"github.com/mark3labs/mcp-go/server"
 )
 
@@ -52,6 +51,7 @@ func NewAulaServer(session *aulaapi.Session) *server.MCPServer {
 
 		// Profile
 		server.ServerTool{Tool: profileTool, Handler: s.profile},
+		server.ServerTool{Tool: listChildrenTool, Handler: s.listChildren},
 	)
 
 	return mcpServer
@@ -105,18 +105,4 @@ func (s *AulaServer) institutionCodes(ctx context.Context) ([]string, error) {
 	return codes, nil
 }
 
-// toolError returns a tool result indicating an error.
-func toolError(msg string) *mcp.CallToolResult {
-	return &mcp.CallToolResult{
-		Content: []mcp.Content{mcp.TextContent{Type: "text", Text: msg}},
-		IsError: true,
-	}
-}
-
-// toolText returns a tool result with text content.
-func toolText(text string) *mcp.CallToolResult {
-	return &mcp.CallToolResult{
-		Content: []mcp.Content{mcp.TextContent{Type: "text", Text: text}},
-	}
-}
 

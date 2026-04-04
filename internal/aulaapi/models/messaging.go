@@ -54,8 +54,8 @@ type MessageThread struct {
 
 // ThreadEntityLinkDto represents a link between a thread and an external entity.
 type ThreadEntityLinkDto struct {
-	EntityID   *string `json:"entityId,omitempty"`
-	ThreadType *string `json:"threadType,omitempty"`
+	EntityID   json.RawMessage `json:"entityId,omitempty"`
+	ThreadType *string         `json:"threadType,omitempty"`
 }
 
 // MessageThreadLatestMessage represents a latest message summary within a thread subscription.

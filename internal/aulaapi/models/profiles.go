@@ -11,7 +11,7 @@ type InstitutionCode = string
 type Address struct {
 	ID             *int64  `json:"id,omitempty"`
 	Street         *string `json:"street,omitempty"`
-	PostalCode     *string `json:"postalCode,omitempty"`
+	PostalCode     json.RawMessage `json:"postalCode,omitempty"`
 	PostalDistrict *string `json:"postalDistrict,omitempty"`
 }
 

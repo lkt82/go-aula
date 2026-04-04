@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__aula__list_messages",
+      "mcp__aula__read_message",
+      "mcp__aula__list_events",
+      "mcp__aula__show_event",
+      "mcp__aula__list_posts",
+      "mcp__aula__show_post",
+      "mcp__aula__presence_status",
+      "mcp__aula__daily_overview",
+      "mcp__aula__list_notifications",
+      "mcp__aula__search",
+      "mcp__aula__list_albums",
+      "mcp__aula__list_documents",
+      "mcp__aula__profile",
+      "mcp__aula__list_children"
+    ]
+  }
+}

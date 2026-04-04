@@ -77,5 +77,5 @@ type LoginChildInstitutionProfile struct {
 	Gender          *string               `json:"gender,omitempty"`
 	Metadata        *string               `json:"metadata,omitempty"`
 	ProfilePicture  json.RawMessage       `json:"profilePicture,omitempty"`
-	MainGroup       json.RawMessage       `json:"mainGroup,omitempty"`
+	MainGroup       *StubbedGroup         `json:"mainGroup,omitempty"`
 }

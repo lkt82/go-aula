@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/spf13/cobra"
 
@@ -99,8 +100,8 @@ func profileHandleMe(jsonOut bool, envOverride string) {
 						street = *ip.Address.Street
 					}
 					postal := ""
-					if ip.Address.PostalCode != nil {
-						postal = *ip.Address.PostalCode
+					if len(ip.Address.PostalCode) > 0 {
+						postal = strings.Trim(string(ip.Address.PostalCode), "\"")
 					}
 					district := ""
 					if ip.Address.PostalDistrict != nil {
