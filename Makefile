@@ -12,25 +12,25 @@ endif
 .PHONY: build test lint fmt clean
 
 build:
-	@mkdir -p bin
-	go build -o bin/aula-cli ./cmd/aula-cli
-	go build -o bin/aula-mcp ./cmd/aula-mcp
+	@mkdir -p $(REPO_ROOT)/bin
+	cd $(REPO_ROOT) && go build -o bin/aula-cli ./cmd/aula-cli
+	cd $(REPO_ROOT) && go build -o bin/aula-mcp ./cmd/aula-mcp
 
 test:
-	go test ./...
+	cd $(REPO_ROOT) && go test ./...
 
 lint:
-	golangci-lint run ./...
+	cd $(REPO_ROOT) && golangci-lint run ./...
 
 fmt:
-	gofmt -w .
-	goimports -w .
+	cd $(REPO_ROOT) && gofmt -w .
+	cd $(REPO_ROOT) && goimports -w .
 
 clean:
-	rm -rf bin/
+	rm -rf $(REPO_ROOT)/bin/
 
 run:
-	go run ./cmd/aula-cli $(ARGS)
+	cd $(REPO_ROOT) && go run ./cmd/aula-cli $(ARGS)
 
 run-mcp:
-	go run ./cmd/aula-mcp $(ARGS)
+	cd $(REPO_ROOT) && go run ./cmd/aula-mcp $(ARGS)
