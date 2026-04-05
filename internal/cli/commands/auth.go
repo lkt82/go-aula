@@ -137,7 +137,7 @@ func handleLogin(level int, envOverride string) {
 	}
 
 	fmt.Fprint(os.Stderr, "        Press Enter when done...")
-	bufio.NewReader(os.Stdin).ReadBytes('\n')
+	_, _ = bufio.NewReader(os.Stdin).ReadBytes('\n')
 	fmt.Fprintln(os.Stderr)
 
 	// Step 2: re-open the same URL to capture the redirect.

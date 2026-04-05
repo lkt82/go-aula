@@ -54,7 +54,7 @@ posts, gallery, documents, notifications, search, and more.`,
 				fmt.Printf("aula-cli v%s\n", version)
 				return
 			}
-			cmd.Help()
+			_ = cmd.Help()
 		},
 	}
 

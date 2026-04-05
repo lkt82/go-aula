@@ -14,9 +14,9 @@ var (
 	ErrSessionExpired  = errors.New("session expired")
 	ErrStepUpRequired  = errors.New("step-up authentication required")
 	ErrUnauthorized    = errors.New("unauthorized")
-	ErrMaintenance     = errors.New("Aula is under maintenance")
-	ErrNotResponding   = errors.New("Aula is not responding")
-	ErrHeavyLoad       = errors.New("Aula is under heavy load")
+	ErrMaintenance     = errors.New("aula is under maintenance")
+	ErrNotResponding   = errors.New("aula is not responding")
+	ErrHeavyLoad       = errors.New("aula is under heavy load")
 	ErrUserDeactivated = errors.New("user account deactivated")
 )
 

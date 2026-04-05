@@ -324,7 +324,7 @@ func printThreadMessages(thread *models.MessagesInThreadDto) {
 	if thread.TotalMessageCount != nil {
 		fmt.Printf("  Messages: %d\n", *thread.TotalMessageCount)
 	}
-	fmt.Println(cli.Dim("=" + fmt.Sprintf("%s", string(make([]byte, 71)))))
+	fmt.Println(cli.Dim("=" + string(make([]byte, 71))))
 
 	if thread.FirstMessage != nil {
 		printMessage(thread.FirstMessage)

@@ -288,7 +288,7 @@ func doRequest[T any](c *AulaClient, req *http.Request) (T, error) {
 	if err != nil {
 		return zero, fmt.Errorf("HTTP request failed: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	// Map well-known HTTP status codes before parsing body.
 	if resp.StatusCode == http.StatusUnauthorized {

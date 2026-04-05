@@ -57,12 +57,6 @@ func NewAulaServer(session *aulaapi.Session) *server.MCPServer {
 	return mcpServer
 }
 
-// childrenIDs resolves the children institution profile IDs from the session.
-// If childName is non-empty, only returns IDs for children whose name contains the string.
-func (s *AulaServer) childrenIDs(ctx context.Context) ([]int64, error) {
-	return s.childrenIDsByName(ctx, "")
-}
-
 // childrenIDsByName resolves children IDs, optionally filtered by name substring.
 func (s *AulaServer) childrenIDsByName(ctx context.Context, childName string) ([]int64, error) {
 	if err := s.session.EnsureContextInitialized(ctx); err != nil {
