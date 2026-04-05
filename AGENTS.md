@@ -45,3 +45,4 @@ make fmt        # gofmt + goimports
 
 - Do not commit or push unless explicitly told to
 - Do not include `Co-Authored-By: Claude` in commit messages
+- Never commit sensitive data: API keys, tokens, secrets, credentials, or .env files
