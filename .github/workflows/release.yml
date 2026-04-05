@@ -15,14 +15,19 @@ jobs:
         include:
           - goos: linux
             goarch: amd64
+            cgo: "0"
           - goos: linux
             goarch: arm64
+            cgo: "0"
           - goos: darwin
             goarch: amd64
+            cgo: "0"
           - goos: darwin
             goarch: arm64
+            cgo: "0"
           - goos: windows
             goarch: amd64
+            cgo: "0"
 
     runs-on: ubuntu-latest
 
@@ -37,6 +42,7 @@ jobs:
         env:
           GOOS: ${{ matrix.goos }}
           GOARCH: ${{ matrix.goarch }}
+          CGO_ENABLED: ${{ matrix.cgo }}
         run: make release-build
 
       - name: Upload artifacts
