@@ -9,7 +9,7 @@ else
 endif
 .SHELLFLAGS := -o pipefail -ec
 
-.PHONY: build test lint fmt clean
+.PHONY: build test lint fmt clean release-build
 
 build:
 	@mkdir -p $(REPO_ROOT)/bin
@@ -34,3 +34,9 @@ run:
 
 run-mcp:
 	cd $(REPO_ROOT) && go run ./cmd/aula-mcp $(ARGS)
+
+release-build:
+	@ext=""; if [ "$(GOOS)" = "windows" ]; then ext=".exe"; fi; \
+	for cmd in aula-cli aula-mcp; do \
+		cd $(REPO_ROOT) && go build -o "$${cmd}-$(GOOS)-$(GOARCH)$${ext}" ./cmd/$${cmd}; \
+	done

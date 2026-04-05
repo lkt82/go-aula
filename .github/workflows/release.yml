@@ -37,13 +37,7 @@ jobs:
         env:
           GOOS: ${{ matrix.goos }}
           GOARCH: ${{ matrix.goarch }}
-        run: |
-          ext=""
-          if [ "$GOOS" = "windows" ]; then ext=".exe"; fi
-
-          for cmd in aula-cli aula-mcp; do
-            go build -o "${cmd}-${GOOS}-${GOARCH}${ext}" ./cmd/${cmd}
-          done
+        run: make release-build
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
