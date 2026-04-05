@@ -60,15 +60,15 @@ Global flags: `--json`, `--env <environment>`, `--verbose`, `--profile <name>`.
 make build
 
 # Log in (opens browser for UniLogin/MitID)
-./aula-cli auth login
+bin/aula-cli auth login
 
 # Check your session
-./aula-cli auth status
+bin/aula-cli auth status
 
 # Try some commands
-./aula-cli messages list
-./aula-cli calendar today
-./aula-cli presence status
+bin/aula-cli messages list
+bin/aula-cli calendar today
+bin/aula-cli presence status
 ```
 
 ## Configuration
@@ -119,11 +119,12 @@ The `aula-mcp` binary is an MCP (Model Context Protocol) server that exposes Aul
 | `list_albums` | List photo albums |
 | `list_documents` | List secure documents |
 | `profile` | Show your profile |
+| `list_children` | List your children with school/institution |
 
 ### Setup
 
 1. Build: `make build`
-2. Log in first: `./aula-cli auth login`
+2. Log in first: `bin/aula-cli auth login`
 3. The repo includes a `.mcp.json` that configures the MCP server for Claude Code automatically using `go run`
 
 ### Claude Desktop
@@ -134,13 +135,13 @@ Add to your Claude Desktop config:
 {
   "mcpServers": {
     "aula": {
-      "command": "/path/to/aula-mcp"
+      "command": "/path/to/bin/aula-mcp"
     }
   }
 }
 ```
 
-Replace `/path/to/aula-mcp` with the actual path to the built binary.
+Replace `/path/to/bin/aula-mcp` with the actual path to the built binary.
 
 ## Project structure
 
