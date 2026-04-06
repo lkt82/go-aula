@@ -100,48 +100,6 @@ func searchTryGlobal(ctx context.Context, session *aulaapi.Session, query string
 	return &result, nil
 }
 
-func searchAcrossDocTypes(ctx context.Context, session *aulaapi.Session, query string, limit int, page *int, counts bool) (*models.SearchResponse, error) {
-	docTypes := []string{"ThreadMessage", "Post", "Profile", "Event"}
-	var allItems []models.SearchResultItem
-	total := 0
-	succeeded := 0
-
-	offset := 0
-	for _, dt := range docTypes {
-		docType := dt
-		params := &models.GlobalSearchParameters{
-			Text:                                &query,
-			Limit:                               &limit,
-			Offset:                              &offset,
-			PageLimit:                           &limit,
-			PageNumber:                          page,
-			DocTypeCount:                        counts,
-			DocType:                             &docType,
-			InstitutionProfileIDs:               session.InstitutionProfileIDs(),
-			ActiveChildrenInstitutionProfileIDs: session.ChildrenInstProfileIDs(),
-		}
-		result, err := services.GlobalSearch(ctx, session, params)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "[search] findGeneric(%s) failed: %v\n", dt, err)
-			continue
-		}
-		succeeded++
-		if result.TotalSize != nil {
-			total += *result.TotalSize
-		}
-		allItems = append(allItems, result.Results...)
-	}
-
-	if succeeded == 0 {
-		return nil, fmt.Errorf("all search endpoints failed")
-	}
-
-	return &models.SearchResponse{
-		TotalSize: &total,
-		Results:   allItems,
-	}, nil
-}
-
 func searchTryProfileSearch(ctx context.Context, session *aulaapi.Session, query string, limit int) (*models.SearchResponse, error) {
 	params := &models.SearchForProfilesAndGroupsParameters{
 		Text:  &query,
@@ -184,42 +142,6 @@ func searchTryGroupSearch(ctx context.Context, session *aulaapi.Session, query s
 	return items, nil
 }
 
-func searchTryCombined(ctx context.Context, session *aulaapi.Session, query string, limit int) (*models.SearchResponse, error) {
-	var allItems []models.SearchResultItem
-	total := 0
-	sourcesOK := 0
-
-	// Profiles
-	profileResult, err := searchTryProfileSearch(ctx, session, query, limit)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "[search] findProfiles failed: %v\n", err)
-	} else {
-		if profileResult.TotalSize != nil {
-			total += *profileResult.TotalSize
-		}
-		allItems = append(allItems, profileResult.Results...)
-		sourcesOK++
-	}
-
-	// Groups
-	groupItems, err := searchTryGroupSearch(ctx, session, query, limit)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "[search] findGroups failed: %v\n", err)
-	} else {
-		total += len(groupItems)
-		allItems = append(allItems, groupItems...)
-		sourcesOK++
-	}
-
-	if sourcesOK == 0 {
-		return nil, fmt.Errorf("all combined search endpoints failed")
-	}
-
-	return &models.SearchResponse{
-		TotalSize: &total,
-		Results:   allItems,
-	}, nil
-}
 
 func searchProbeEndpoints(ctx context.Context, session *aulaapi.Session, query string, limit int) {
 	fmt.Println(cli.Bold(fmt.Sprintf("Probing search endpoints with query '%s':", query)))
