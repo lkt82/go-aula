@@ -312,7 +312,17 @@ func (s *Session) EnsureContextInitialized(ctx context.Context) error {
 	}
 
 	// Step 1: Call getProfilesByLogin to establish the PHP session.
+	// Refresh token first if expired, then retry on 401.
+	if err := s.EnsureValidToken(ctx); err != nil {
+		return fmt.Errorf("token refresh before getProfilesByLogin: %w", err)
+	}
 	profileResp, err := Get[OnboardingResponseDto](ctx, s.client, "?method=profiles.getprofilesbylogin")
+	if err != nil && (errors.Is(err, ErrUnauthorized) || errors.Is(err, ErrInvalidToken)) {
+		if refreshErr := s.RefreshTokens(ctx); refreshErr != nil {
+			return fmt.Errorf("getProfilesByLogin: %w", err)
+		}
+		profileResp, err = Get[OnboardingResponseDto](ctx, s.client, "?method=profiles.getprofilesbylogin")
+	}
 	if err != nil {
 		return fmt.Errorf("getProfilesByLogin: %w", err)
 	}

@@ -508,7 +508,7 @@ type ParentDailyOverviewInstitutionProfile struct {
 type ParentsDailyOverviewResult struct {
 	InstitutionProfile                  *ParentDailyOverviewInstitutionProfile `json:"institutionProfile,omitempty"`
 	MainGroup                           *MainGroup                            `json:"mainGroup,omitempty"`
-	Status                              *string                               `json:"status,omitempty"`
+	Status                              *int                                  `json:"status,omitempty"`
 	SleepIntervals                      []SleepIntervalResult                 `json:"sleepIntervals,omitempty"`
 	CheckInTime                         *string                               `json:"checkInTime,omitempty"`
 	CheckOutTime                        *string                               `json:"checkOutTime,omitempty"`

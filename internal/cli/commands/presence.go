@@ -166,7 +166,7 @@ func presHandleRegistrations(children []int64, jsonOut bool, envOverride string)
 		for _, r := range regs {
 			statusRaw := ""
 			if r.Status != nil {
-				statusRaw = *r.Status
+				statusRaw = presenceStatusName(*r.Status)
 			}
 			statusDisplay := cli.ColorPresenceStatus(statusRaw)
 			checkin := ""
@@ -230,13 +230,85 @@ func presHandleSchedule(children []int64, from, to string, jsonOut bool, envOver
 	if jsonOut {
 		cli.PrintJSON(schedule)
 	} else {
-		// Print raw JSON for schedule (complex structure)
-		data, err := json.MarshalIndent(schedule, "", "  ")
-		if err != nil {
-			fmt.Println("(error)")
-		} else {
-			fmt.Println(string(data))
+		presDisplaySchedule(schedule)
+	}
+}
+
+type scheduleWeekTemplate struct {
+	InstitutionProfile struct {
+		Name            string `json:"name"`
+		InstitutionName string `json:"institutionName"`
+	} `json:"institutionProfile"`
+	DayTemplates []struct {
+		DayOfWeek  int     `json:"dayOfWeek"`
+		EntryTime  *string `json:"entryTime,omitempty"`
+		ExitTime   *string `json:"exitTime,omitempty"`
+		IsOnVacation bool  `json:"isOnVacation"`
+		ExitWith   *string `json:"exitWith,omitempty"`
+		Comment    *string `json:"comment,omitempty"`
+	} `json:"dayTemplates"`
+}
+
+var dayNames = []string{"", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"}
+
+func presDisplaySchedule(raw json.RawMessage) {
+	var schedule struct {
+		CurrentDate           *string            `json:"currentDate,omitempty"`
+		PresenceWeekTemplates []json.RawMessage  `json:"presenceWeekTemplates,omitempty"`
+	}
+	if err := json.Unmarshal(raw, &schedule); err != nil {
+		fmt.Println("(failed to parse schedule)")
+		return
+	}
+	if schedule.CurrentDate != nil {
+		fmt.Printf("Week of %s\n\n", *schedule.CurrentDate)
+	}
+	for _, raw := range schedule.PresenceWeekTemplates {
+		var tmpl scheduleWeekTemplate
+		if err := json.Unmarshal(raw, &tmpl); err != nil {
+			continue
 		}
+		fmt.Println(cli.Bold(fmt.Sprintf("%s (%s)", tmpl.InstitutionProfile.Name, tmpl.InstitutionProfile.InstitutionName)))
+		table := cli.NewTable([]cli.Column{
+			{Header: "DAY", Width: 5},
+			{Header: "ENTRY", Width: 8},
+			{Header: "EXIT", Width: 8},
+			{Header: "NOTE", Width: 30},
+		})
+		table.PrintHeader()
+		for _, d := range tmpl.DayTemplates {
+			day := ""
+			if d.DayOfWeek >= 1 && d.DayOfWeek <= 7 {
+				day = dayNames[d.DayOfWeek]
+			}
+			entry := "-"
+			exit := "-"
+			note := ""
+			if d.IsOnVacation {
+				note = "Vacation"
+			} else {
+				if d.EntryTime != nil && *d.EntryTime != "" {
+					entry = *d.EntryTime
+				}
+				if d.ExitTime != nil && *d.ExitTime != "" {
+					exit = *d.ExitTime
+				}
+				if d.ExitWith != nil && *d.ExitWith != "" {
+					note = "exit with: " + *d.ExitWith
+				}
+				if d.Comment != nil && *d.Comment != "" {
+					if note != "" {
+						note += " "
+					}
+					note += "[" + *d.Comment + "]"
+				}
+			}
+			table.PrintRow([]string{day, entry, exit, note})
+		}
+		fmt.Println()
+	}
+	if len(schedule.PresenceWeekTemplates) == 0 {
+		fmt.Println("No schedule data found.")
 	}
 }
 
@@ -257,18 +329,22 @@ func presHandleReportStatus(children []int64, status int, jsonOut bool, envOverr
 	if jsonOut {
 		cli.PrintJSON(result)
 	} else {
-		statusName := "Unknown"
-		switch status {
-		case 0:
-			statusName = "NotPresent"
-		case 1:
-			statusName = "Sick"
-		case 2:
-			statusName = "ReportedAbsence"
-		case 3:
-			statusName = "Present"
-		}
 		fmt.Printf("Status updated to %s for %d profile(s).\n",
-			cli.ColorPresenceStatus(statusName), len(children))
+			cli.ColorPresenceStatus(presenceStatusName(status)), len(children))
+	}
+}
+
+func presenceStatusName(status int) string {
+	switch status {
+	case 0:
+		return "NotPresent"
+	case 1:
+		return "Sick"
+	case 2:
+		return "ReportedAbsence"
+	case 3:
+		return "Present"
+	default:
+		return fmt.Sprintf("Unknown(%d)", status)
 	}
 }
