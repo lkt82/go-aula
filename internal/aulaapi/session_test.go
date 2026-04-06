@@ -74,7 +74,7 @@ func tokenEndpointHandler(newToken string) http.HandlerFunc {
 				ExpiresIn:   &expiresIn,
 			}
 			w.Header().Set("Content-Type", "application/json")
-			json.NewEncoder(w).Encode(resp)
+			_ = json.NewEncoder(w).Encode(resp)
 			return
 		}
 		http.NotFound(w, r)
@@ -134,7 +134,7 @@ func TestEnsureValidToken_ExpiredRefreshes(t *testing.T) {
 				ExpiresIn:   &expiresIn,
 			}
 			w.Header().Set("Content-Type", "application/json")
-			json.NewEncoder(w).Encode(resp)
+			_ = json.NewEncoder(w).Encode(resp)
 			return
 		}
 		http.NotFound(w, r)
@@ -213,7 +213,7 @@ func TestEnsureContextInitialized_RetryOn401(t *testing.T) {
 				ExpiresIn:   &expiresIn,
 			}
 			w.Header().Set("Content-Type", "application/json")
-			json.NewEncoder(w).Encode(resp)
+			_ = json.NewEncoder(w).Encode(resp)
 			return
 		}
 
@@ -227,7 +227,7 @@ func TestEnsureContextInitialized_RetryOn401(t *testing.T) {
 			}
 			// After refresh: succeed with minimal profile data
 			w.Header().Set("Content-Type", "application/json")
-			w.Write(aulaEnvelope(map[string]interface{}{
+			_, _ = w.Write(aulaEnvelope(map[string]interface{}{
 				"profiles": []interface{}{},
 			}))
 			return
@@ -235,7 +235,7 @@ func TestEnsureContextInitialized_RetryOn401(t *testing.T) {
 
 		if strings.Contains(r.URL.RawQuery, "method=profiles.getProfileContext") {
 			w.Header().Set("Content-Type", "application/json")
-			w.Write(aulaEnvelope(nil))
+			_, _ = w.Write(aulaEnvelope(nil))
 			return
 		}
 
@@ -261,13 +261,13 @@ func TestEnsureContextInitialized_OnlyCalledOnce(t *testing.T) {
 		apiCalls.Add(1)
 		w.Header().Set("Content-Type", "application/json")
 		if strings.Contains(r.URL.RawQuery, "method=profiles.getprofilesbylogin") {
-			w.Write(aulaEnvelope(map[string]interface{}{
+			_, _ = w.Write(aulaEnvelope(map[string]interface{}{
 				"profiles": []interface{}{},
 			}))
 			return
 		}
 		if strings.Contains(r.URL.RawQuery, "method=profiles.getProfileContext") {
-			w.Write(aulaEnvelope(nil))
+			_, _ = w.Write(aulaEnvelope(nil))
 			return
 		}
 		http.NotFound(w, r)
