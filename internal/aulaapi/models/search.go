@@ -414,13 +414,17 @@ type SearchGroupResultModel struct {
 
 // GlobalSearchParameters represents global search parameters.
 type GlobalSearchParameters struct {
-	Text         *string  `json:"text,omitempty"`
-	PageLimit    *int     `json:"pageLimit,omitempty"`
-	PageNumber   *int     `json:"pageNumber,omitempty"`
-	GroupID      *int64   `json:"groupId,omitempty"`
-	DocTypeCount bool     `json:"docTypeCount"`
-	DocType      *string  `json:"docType,omitempty"`
-	GroupTypes   []string `json:"groupTypes,omitempty"`
+	Text                                *string  `json:"text,omitempty"`
+	PageLimit                           *int     `json:"pageLimit,omitempty"`
+	PageNumber                          *int     `json:"pageNumber,omitempty"`
+	Limit                               *int     `json:"limit,omitempty"`
+	Offset                              *int     `json:"offset,omitempty"`
+	GroupID                             *int64   `json:"groupId,omitempty"`
+	DocTypeCount                        bool     `json:"docTypeCount"`
+	DocType                             *string  `json:"docType,omitempty"`
+	GroupTypes                          []string `json:"groupTypes,omitempty"`
+	InstitutionProfileIDs               []int64  `json:"institutionProfileIds,omitempty"`
+	ActiveChildrenInstitutionProfileIDs []int64  `json:"activeChildrenInstitutionProfileIds,omitempty"`
 }
 
 // SearchForAssociateSecureDocumentsParameter represents secure document association search parameters.

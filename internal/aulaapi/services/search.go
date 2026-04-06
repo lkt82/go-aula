@@ -30,6 +30,18 @@ func GlobalSearch(ctx context.Context, s *aulaapi.Session, params *models.Global
 	if params.DocType != nil {
 		query = append(query, fmt.Sprintf("docType=%s", EncodeValue(*params.DocType)))
 	}
+	if params.Limit != nil {
+		query = append(query, fmt.Sprintf("limit=%d", *params.Limit))
+	}
+	if params.Offset != nil {
+		query = append(query, fmt.Sprintf("offset=%d", *params.Offset))
+	}
+	for _, id := range params.InstitutionProfileIDs {
+		query = append(query, fmt.Sprintf("institutionProfileIds[]=%d", id))
+	}
+	for _, id := range params.ActiveChildrenInstitutionProfileIDs {
+		query = append(query, fmt.Sprintf("activeChildrenInstitutionProfileIds[]=%d", id))
+	}
 	path := "?method=search.findGeneric"
 	if len(query) > 0 {
 		path += "&" + strings.Join(query, "&")
