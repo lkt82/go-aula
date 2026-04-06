@@ -172,7 +172,8 @@ func msgHandleList(limit int, page *int, all, unread, marked bool, folder *int64
 		ft := "FilterMarked"
 		filterType = &ft
 	}
-	sortType := "SortDate"
+	sortOn := "date"
+	orderDir := "desc"
 
 	if all {
 		var allThreads []models.MessageThreadSubscription
@@ -180,10 +181,11 @@ func msgHandleList(limit int, page *int, all, unread, marked bool, folder *int64
 		for {
 			p := currentPage
 			threadArgs := &models.GetThreadListArguments{
-				FolderID:   folder,
-				FilterType: filterType,
-				SortType:   &sortType,
-				Page:       &p,
+				FolderID:       folder,
+				FilterType:     filterType,
+				SortOn:         &sortOn,
+				OrderDirection: &orderDir,
+				Page:           &p,
 			}
 			result, err := services.GetThreadList(ctx, session, threadArgs)
 			if err != nil {
@@ -207,10 +209,11 @@ func msgHandleList(limit int, page *int, all, unread, marked bool, folder *int64
 		}
 	} else {
 		threadArgs := &models.GetThreadListArguments{
-			FolderID:   folder,
-			FilterType: filterType,
-			SortType:   &sortType,
-			Page:       page,
+			FolderID:       folder,
+			FilterType:     filterType,
+			SortOn:         &sortOn,
+			OrderDirection: &orderDir,
+			Page:           page,
 		}
 		result, err := services.GetThreadList(ctx, session, threadArgs)
 		if err != nil {

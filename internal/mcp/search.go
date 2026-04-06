@@ -13,6 +13,7 @@ import (
 var searchTool = mcp.NewTool("search",
 	mcp.WithDescription("Search across Aula content (messages, posts, profiles, groups)."),
 	mcp.WithString("query", mcp.Description("Search text"), mcp.Required()),
+	mcp.WithString("type", mcp.Description("Content type: ThreadMessage (default), Post, Profile, Event")),
 )
 
 func (s *AulaServer) search(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
@@ -21,52 +22,28 @@ func (s *AulaServer) search(ctx context.Context, req mcp.CallToolRequest) (*mcp.
 		return toolError("query is required"), nil
 	}
 
+	docType := req.GetString("type", "ThreadMessage")
+
 	if err := s.session.EnsureContextInitialized(ctx); err != nil {
 		return toolError(fmt.Sprintf("Failed to initialize session: %v", err)), nil
 	}
 
-	institutionProfileIDs := s.session.InstitutionProfileIDs()
-	childrenProfileIDs := s.session.ChildrenInstProfileIDs()
 	limit := 20
 	offset := 0
-
-	// Search across common doc types and merge results
-	docTypes := []string{"ThreadMessage", "Post", "Profile", "Gallery"}
-	var allItems []models.SearchResultItem
-	total := 0
-	succeeded := 0
-
-	for _, dt := range docTypes {
-		docType := dt
-		params := &models.GlobalSearchParameters{
-			Text:                                &query,
-			Limit:                               &limit,
-			Offset:                              &offset,
-			DocTypeCount:                        true,
-			DocType:                             &docType,
-			InstitutionProfileIDs:               institutionProfileIDs,
-			ActiveChildrenInstitutionProfileIDs: childrenProfileIDs,
-		}
-		result, err := services.GlobalSearch(ctx, s.session, params)
-		if err != nil {
-			continue
-		}
-		succeeded++
-		if result.TotalSize != nil {
-			total += *result.TotalSize
-		}
-		allItems = append(allItems, result.Results...)
+	params := &models.GlobalSearchParameters{
+		Text:                                &query,
+		Limit:                               &limit,
+		Offset:                              &offset,
+		DocTypeCount:                        true,
+		DocType:                             &docType,
+		InstitutionProfileIDs:               s.session.InstitutionProfileIDs(),
+		ActiveChildrenInstitutionProfileIDs: s.session.ChildrenInstProfileIDs(),
 	}
-
-	if succeeded == 0 {
-		return toolError("Search failed: all search endpoints returned errors"), nil
+	result, err := services.GlobalSearch(ctx, s.session, params)
+	if err != nil {
+		return toolError(fmt.Sprintf("Search failed: %v", err)), nil
 	}
-
-	combined := models.SearchResponse{
-		TotalSize: &total,
-		Results:   allItems,
-	}
-	return toolText(formatSearchResults(combined)), nil
+	return toolText(formatSearchResults(result)), nil
 }
 
 func formatSearchResults(result models.SearchResponse) string {

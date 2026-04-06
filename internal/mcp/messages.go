@@ -36,48 +36,30 @@ func (s *AulaServer) listMessages(ctx context.Context, req mcp.CallToolRequest) 
 	childName := req.GetString("child", "")
 	since := req.GetString("since", currentSchoolYearStart())
 
-	// Find the last page number (scan forward — pages are small/fast).
-	lastPage := 0
-	for p := 0; ; p++ {
-		pp := p
-		args := &models.GetThreadListArguments{Page: &pp}
-		result, err := services.GetThreadList(ctx, s.session, args)
-		if err != nil {
-			break
-		}
-		lastPage = p
-		if !result.MoreMessagesExist {
-			break
-		}
+	sortOn := "date"
+	orderDir := "desc"
+	page := 0
+	args := &models.GetThreadListArguments{
+		Page:           &page,
+		SortOn:         &sortOn,
+		OrderDirection: &orderDir,
+	}
+	result, err := services.GetThreadList(ctx, s.session, args)
+	if err != nil {
+		return toolError(fmt.Sprintf("Failed to list messages: %v", err)), nil
 	}
 
-	// Fetch backwards from last page, collecting up to 20 matching threads.
-	var allThreads []models.MessageThreadSubscription
-	for p := lastPage; p >= 0 && len(allThreads) < 20; p-- {
-		pp := p
-		args := &models.GetThreadListArguments{Page: &pp}
-		result, err := services.GetThreadList(ctx, s.session, args)
-		if err != nil {
-			break
-		}
-		threads := result.Threads
-		if childName != "" {
-			threads = filterThreadsByChild(threads, childName)
-		}
-		if since != "" {
-			threads = filterThreadsSince(threads, since)
-		}
-		// Reverse page so newest thread is first.
-		for i, j := 0, len(threads)-1; i < j; i, j = i+1, j-1 {
-			threads[i], threads[j] = threads[j], threads[i]
-		}
-		allThreads = append(allThreads, threads...)
+	threads := result.Threads
+	if childName != "" {
+		threads = filterThreadsByChild(threads, childName)
 	}
-
-	if len(allThreads) > 20 {
-		allThreads = allThreads[:20]
+	if since != "" {
+		threads = filterThreadsSince(threads, since)
 	}
-	return toolText(formatThreadList(models.MessageThreadSubscriptionList{Threads: allThreads})), nil
+	if len(threads) > 20 {
+		threads = threads[:20]
+	}
+	return toolText(formatThreadList(models.MessageThreadSubscriptionList{Threads: threads})), nil
 }
 
 func (s *AulaServer) readMessage(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {

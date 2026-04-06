@@ -472,8 +472,8 @@ type GetMessagesForThreadArguments struct {
 type GetThreadListArguments struct {
 	FolderID         *int64  `json:"folderId,omitempty"`
 	FilterType       *string `json:"filterType,omitempty"`
-	SortType         *string `json:"sortType,omitempty"`
-	SortOrder        *string `json:"sortOrder,omitempty"`
+	SortOn           *string `json:"sortOn,omitempty"`
+	OrderDirection   *string `json:"orderDirection,omitempty"`
 	Page             *int    `json:"page,omitempty"`
 	ThreadIDs        []int64 `json:"threadIds,omitempty"`
 	MailBoxOwnerType *string `json:"mailBoxOwnerType,omitempty"`

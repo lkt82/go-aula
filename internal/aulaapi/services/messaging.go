@@ -35,11 +35,11 @@ func GetThreadList(ctx context.Context, s *aulaapi.Session, args *models.GetThre
 	if args.FilterType != nil {
 		params = append(params, fmt.Sprintf("filterType=%s", enumToQueryValue(*args.FilterType)))
 	}
-	if args.SortType != nil {
-		params = append(params, fmt.Sprintf("sortType=%s", enumToQueryValue(*args.SortType)))
+	if args.SortOn != nil {
+		params = append(params, fmt.Sprintf("sortOn=%s", EncodeValue(*args.SortOn)))
 	}
-	if args.SortOrder != nil {
-		params = append(params, fmt.Sprintf("sortOrder=%s", enumToQueryValue(*args.SortOrder)))
+	if args.OrderDirection != nil {
+		params = append(params, fmt.Sprintf("orderDirection=%s", EncodeValue(*args.OrderDirection)))
 	}
 	if args.MailBoxOwnerType != nil {
 		params = append(params, fmt.Sprintf("mailBoxOwnerType=%s", enumToQueryValue(*args.MailBoxOwnerType)))

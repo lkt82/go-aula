@@ -25,22 +25,24 @@ func NewSearchCmd(jsonFlag *bool, envFlag *string) *cobra.Command {
 			page, _ := c.Flags().GetInt("page")
 			counts, _ := c.Flags().GetBool("counts")
 			probe, _ := c.Flags().GetBool("probe")
+			docType, _ := c.Flags().GetString("type")
 
 			var pagePtr *int
 			if c.Flags().Changed("page") {
 				pagePtr = &page
 			}
-			searchHandle(query, limit, pagePtr, counts, probe, *jsonFlag, *envFlag)
+			searchHandle(query, limit, pagePtr, counts, probe, docType, *jsonFlag, *envFlag)
 		},
 	}
 	cmd.Flags().IntP("limit", "n", 20, "Maximum number of results")
 	cmd.Flags().Int("page", 0, "Page number")
 	cmd.Flags().Bool("counts", false, "Include document type counts in output")
 	cmd.Flags().Bool("probe", false, "Probe all search endpoints and report which ones work")
+	cmd.Flags().String("type", "ThreadMessage", "Content type: ThreadMessage, Post, Profile, Event")
 	return cmd
 }
 
-func searchHandle(query string, limit int, page *int, counts, probe bool, jsonOut bool, envOverride string) {
+func searchHandle(query string, limit int, page *int, counts, probe bool, docType string, jsonOut bool, envOverride string) {
 	session := cli.BuildSession(envOverride)
 	ctx := context.Background()
 
@@ -49,38 +51,95 @@ func searchHandle(query string, limit int, page *int, counts, probe bool, jsonOu
 		return
 	}
 
-	// Try findGeneric first, fall back to combined search
-	result, err := searchTryGlobal(ctx, session, query, limit, page, counts)
+	if err := session.EnsureContextInitialized(ctx); err != nil {
+		fmt.Fprintf(os.Stderr, "error: failed to initialize session: %v\n", err)
+		os.Exit(1)
+	}
+
+	offset := 0
+	params := &models.GlobalSearchParameters{
+		Text:                                &query,
+		Limit:                               &limit,
+		Offset:                              &offset,
+		PageLimit:                           &limit,
+		PageNumber:                          page,
+		DocTypeCount:                        counts,
+		DocType:                             &docType,
+		InstitutionProfileIDs:               session.InstitutionProfileIDs(),
+		ActiveChildrenInstitutionProfileIDs: session.ChildrenInstProfileIDs(),
+	}
+	result, err := services.GlobalSearch(ctx, session, params)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "[search] findGeneric failed (%v), falling back to combined search\n", err)
-		result, err = searchTryCombined(ctx, session, query, limit)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "error: combined search also failed: %v\n", err)
-			os.Exit(1)
-		}
-	} else {
-		fmt.Fprintln(os.Stderr, "[search] findGeneric succeeded")
+		fmt.Fprintf(os.Stderr, "error: search failed: %v\n", err)
+		os.Exit(1)
 	}
 
 	if jsonOut {
 		cli.PrintJSON(result)
 	} else {
-		searchDisplayResults(query, counts, result)
+		searchDisplayResults(query, counts, &result)
 	}
 }
 
 func searchTryGlobal(ctx context.Context, session *aulaapi.Session, query string, limit int, page *int, counts bool) (*models.SearchResponse, error) {
+	offset := 0
 	params := &models.GlobalSearchParameters{
-		Text:         &query,
-		PageLimit:    &limit,
-		PageNumber:   page,
-		DocTypeCount: counts,
+		Text:                                &query,
+		Limit:                               &limit,
+		Offset:                              &offset,
+		PageLimit:                           &limit,
+		PageNumber:                          page,
+		DocTypeCount:                        counts,
+		InstitutionProfileIDs:               session.InstitutionProfileIDs(),
+		ActiveChildrenInstitutionProfileIDs: session.ChildrenInstProfileIDs(),
 	}
 	result, err := services.GlobalSearch(ctx, session, params)
 	if err != nil {
 		return nil, err
 	}
 	return &result, nil
+}
+
+func searchAcrossDocTypes(ctx context.Context, session *aulaapi.Session, query string, limit int, page *int, counts bool) (*models.SearchResponse, error) {
+	docTypes := []string{"ThreadMessage", "Post", "Profile", "Event"}
+	var allItems []models.SearchResultItem
+	total := 0
+	succeeded := 0
+
+	offset := 0
+	for _, dt := range docTypes {
+		docType := dt
+		params := &models.GlobalSearchParameters{
+			Text:                                &query,
+			Limit:                               &limit,
+			Offset:                              &offset,
+			PageLimit:                           &limit,
+			PageNumber:                          page,
+			DocTypeCount:                        counts,
+			DocType:                             &docType,
+			InstitutionProfileIDs:               session.InstitutionProfileIDs(),
+			ActiveChildrenInstitutionProfileIDs: session.ChildrenInstProfileIDs(),
+		}
+		result, err := services.GlobalSearch(ctx, session, params)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "[search] findGeneric(%s) failed: %v\n", dt, err)
+			continue
+		}
+		succeeded++
+		if result.TotalSize != nil {
+			total += *result.TotalSize
+		}
+		allItems = append(allItems, result.Results...)
+	}
+
+	if succeeded == 0 {
+		return nil, fmt.Errorf("all search endpoints failed")
+	}
+
+	return &models.SearchResponse{
+		TotalSize: &total,
+		Results:   allItems,
+	}, nil
 }
 
 func searchTryProfileSearch(ctx context.Context, session *aulaapi.Session, query string, limit int) (*models.SearchResponse, error) {
