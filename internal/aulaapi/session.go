@@ -311,7 +311,7 @@ func (s *Session) EnsureContextInitialized(ctx context.Context) error {
 		return nil
 	}
 
-	// Step 1: Call getProfilesByLogin to establish the PHP session.
+	// Step 1: Call getProfilesByLogin to establish the server-side session.
 	// Refresh token first if expired, then retry on 401.
 	if err := s.EnsureValidToken(ctx); err != nil {
 		return fmt.Errorf("token refresh before getProfilesByLogin: %w", err)
