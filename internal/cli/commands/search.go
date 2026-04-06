@@ -222,11 +222,15 @@ func searchDisplayResults(query string, showCounts bool, result *models.SearchRe
 				docType = *item.DocType
 			}
 			name := "(unnamed)"
-			if item.Name != nil {
+			if item.Title != nil {
+				name = *item.Title
+			} else if item.Name != nil {
 				name = *item.Name
 			}
 			desc := ""
-			if item.Description != nil {
+			if item.Author != nil {
+				desc = *item.Author
+			} else if item.Description != nil {
 				desc = *item.Description
 			}
 			table.PrintRow([]string{

@@ -12,6 +12,7 @@ type SearchResponse struct {
 
 // SearchResultCountItem represents a doc-type facet count.
 type SearchResultCountItem struct {
+	Key   *string `json:"key,omitempty"`
 	Name  *string `json:"name,omitempty"`
 	Count *int    `json:"count,omitempty"`
 }
@@ -31,14 +32,25 @@ type SearchResultHighlight struct {
 
 // SearchResultItem represents a base search result item.
 type SearchResultItem struct {
-	DocID            *string `json:"docId,omitempty"`
-	DocType          *string `json:"docType,omitempty"`
-	InstitutionCode  *string `json:"institutionCode,omitempty"`
-	InstitutionName  *string `json:"institutionName,omitempty"`
-	MunicipalityCode *string `json:"municipalityCode,omitempty"`
-	MunicipalityName *string `json:"municipalityName,omitempty"`
-	Name             *string `json:"name,omitempty"`
-	Description      *string `json:"description,omitempty"`
+	DocID                *string  `json:"docId,omitempty"`
+	DocType              *string  `json:"docType,omitempty"`
+	ID                   *string  `json:"id,omitempty"`
+	Title                *string  `json:"title,omitempty"`
+	Message              *string  `json:"message,omitempty"`
+	Author               *string  `json:"author,omitempty"`
+	Metadata             *string  `json:"metadata,omitempty"`
+	ThreadID             *int64   `json:"threadId,omitempty"`
+	MessageID            *string  `json:"messageId,omitempty"`
+	MessageType          *string  `json:"messageType,omitempty"`
+	LatestMessageSendTime *string `json:"latestMessageSendTime,omitempty"`
+	StepUpRequired       *bool    `json:"stepUpRequired,omitempty"`
+	Score                *float64 `json:"score,omitempty"`
+	InstitutionCode      *string  `json:"institutionCode,omitempty"`
+	InstitutionName      *string  `json:"institutionName,omitempty"`
+	MunicipalityCode     *string  `json:"municipalityCode,omitempty"`
+	MunicipalityName     *string  `json:"municipalityName,omitempty"`
+	Name                 *string  `json:"name,omitempty"`
+	Description          *string  `json:"description,omitempty"`
 }
 
 // SearchResultCommonFile represents a search result for a common file.
